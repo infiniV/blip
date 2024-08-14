@@ -1,0 +1,47 @@
+for cursor.Next(context.TODO()) {
+		var OneObject AreaCodes
+		if err = cursor.Decode(&OneObject); err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Document: %+v\n", OneObject)
+		quantity := npaQuantityMap[OneObject.Number]
+		lumenRateCenter = append(lumenRateCenter, LumenRateCenter{
+			RateCenter: OneObject.RC,
+			State:      OneObject.State,
+			TnQuantity: quantity,
+		})
+
+		if len(lumenRateCenter) == 1 {
+			i++
+			lumenOrder := LumenOrderRequest{
+				ProductID:           "2123",
+				RateCenters:         lumenRateCenter,
+				ExternalOrderID:     uuid.New().String(),
+				CustomerServiceName: "DID-Local-Inbou",
+			}
+			resp, err := restClient.R().
+				SetAuthToken(token).
+				SetHeader("x-customer-number", "sdasdasdasd").
+				SetBody(lumenOrder).SetHeader("Content-Type", "application/json").
+				Post("https://api-test.lumen.com/Voice/v1/Numbers/orderInventory")
+
+			if err != nil {
+				fmt.Println("got error", err)
+				return
+			}
+
+			var lumenOrderResponse LumenOrderResponse
+
+			err = json.Unmarshal(resp.Body(), &lumenOrderResponse)
+			if err != nil {
+				panic(err)
+			}
+			lumenOrderResponses = append(lumenOrderResponses, lumenOrderResponse)
+
+			lumenRateCenter = []LumenRateCenter{}
+		}
+
+		if i == len(npaArray) {
+			break
+		}
+	}

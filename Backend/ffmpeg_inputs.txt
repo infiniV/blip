@@ -1,0 +1,15 @@
+file 'scripts/images/image_1_Aerial_shot_of_the_lush_Amazon.png'
+duration 5
+drawtext=text='':x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white
+file 'scripts/images/image_2_A_close-up_of_a_serpentine_cre.png'
+duration 5
+drawtext=text='':x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white
+file 'scripts/images/image_3_A_village_scene_with_villagers.png'
+duration 5
+drawtext=text='':x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white
+file 'scripts/images/image_5_A_scene_of_the_monster_swoopin.png'
+duration 5
+drawtext=text='':x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white
+file 'scripts/images/image_6_The_final_shot_is_of_a_group_o.png'
+duration 5
+drawtext=text='':x=(w-text_w)/2:y=(h-text_h)/2:fontsize=24:fontcolor=white
