@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import PromptInput from "@/components/PromptInput";
 import VoiceOverEditor from "@/components/VoiceOverEditor";
 import ImageDescriptionEditor from "@/components/ImageDescriptionEditor";
@@ -62,10 +63,8 @@ export default function Home() {
       });
       const data = await response.json();
       setImageDescriptions(data["images_guide"]);
-      if (audioSrc){
-      setStep(3)
-        alert("bro generate the audio plz")
-      }
+      setStep(3);
+      alert("bro generate the audio plz");
     } catch (error) {
       console.error("Error generating image descriptions:", error);
     } finally {
@@ -96,14 +95,25 @@ export default function Home() {
   const handleGenerateVideo = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/create_slideshow", {
+      const response = await fetch("http://127.0.0.1:5000/create_slideshow", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({}),
       });
 
       if (response.ok) {
-        // Directly set the video source from the public directory
-        setVideoSrc("/final_video_with_subs.mp4");
-        setStep(5);
+        const data = await response.json(); // Parse the JSON response
+        console.log("API Response:", data); // Debugging: Check the response
+
+        // Assuming response contains `video_file` property
+        if (data.video_file) {
+          setVideoSrc(data.video_file); // Set the video source from the response
+          setStep(5);
+        } else {
+          console.error("Video file not found in response");
+        }
       } else {
         console.error("Error generating video:", response.statusText);
       }
@@ -154,102 +164,151 @@ export default function Home() {
   };
 
   const handleBack = () => {
-    setStep(prevStep => Math.max(prevStep - 1, 1)); // Decrement step but not below 1
+    setStep((prevStep) => Math.max(prevStep - 1, 1)); // Decrement step but not below 1
   };
 
   return (
-      <div className="bg-[#000000] relative">
-        {step != 1 && !isLoading && <button
-            onClick={handleBack}
-            className="absolute top-4 left-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+    <div className="bg-[#000000] relative">
+      {step !== 1 && !isLoading && (
+        <motion.button
+          onClick={handleBack}
+          className="absolute top-4 left-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
-          <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" className="w-6 h-6">
-            <path d="M352 128.4L319.7 96 160 256l159.7 160 32.3-32.4L224.7 256z" fill="#95e138"></path>
+          <svg
+            viewBox="0 0 512 512"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-6 h-6"
+          >
+            <path
+              d="M352 128.4L319.7 96 160 256l159.7 160 32.3-32.4L224.7 256z"
+              fill="#95e138"
+            ></path>
           </svg>
-        </button>
-        }
-        {step === 1 && (
-            <>
-              {/* Video Gallery Button */}
-              {!isLoading && (
-                  <button
-                      onClick={toggleGallery}
-                      className="absolute top-4 right-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
-                  >
-                  Video Gallery
-                  </button>
-              )}
-              {/* Show Video Gallery */}
-              {showGallery && (
-                  <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
-                    <VideoGallery onClose={toggleGallery}/>
-                  </div>
-              )}
+        </motion.button>
+      )}
 
-              {/* Step 1: Prompt Input */}
-              {!isLoading && <PromptInput onSubmit={handlePromptSubmit}/>}
-              {isLoading && <Spinner/>}
-            </>
-        )}
+      {step === 1 && (
+        <>
+          {/* Video Gallery Button */}
+          {!isLoading && (
+            <motion.button
+              onClick={toggleGallery}
+              className="absolute top-4 right-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              Video Gallery
+            </motion.button>
+          )}
 
-        {/* Step 2: VoiceOver Editor */}
-        {step === 2 && (
-            <>
-              {!isLoading && (
-                  <VoiceOverEditor
-                      initialText={voiceOverText}
-                      currentText={editorText}
-                      onTextChange={setEditorText}
-                      onImageSubmit={handleImageDescriptionSubmit}
-                      onVoiceOverSubmit={handleVoiceOverSubmit}
-                  />
-              )}
-              {!isLoading && (
-                  <div className="flex flex-row justify-center mt-2">
-                    {audioSrc && <AudioPlayer src={audioSrc}/>}
-                  </div>
-              )}
-              {isLoading && <Spinner/>}
-            </>
-        )}
+          {/* Show Video Gallery */}
+          <AnimatePresence>
+            {showGallery && (
+              <motion.div
+                className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <VideoGallery onClose={toggleGallery} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-        {/* Step 3: Image Description Editor */}
-        {step === 3 && (
-            <>
-              {!isLoading && (
-                  <ImageDescriptionEditor
-                      initialDescriptions={imageDescriptions}
-                      onSubmit={handleImageSubmit}
-                  />
-              )}
-              {isLoading && <Spinner/>}
-            </>
-        )}
+          {/* Step 1: Prompt Input */}
+          {!isLoading && <PromptInput onSubmit={handlePromptSubmit} />}
+          {isLoading && <Spinner />}
+        </>
+      )}
 
-        {/* Step 4: Generated Images and Generate Final Video Button */}
-        {step === 4 && (
-            <>
-              {!isLoading && (
-                  <div className="flex flex-row justify-center mt-2">
-                    <button
-                        onClick={handleGenerateVideo}
-                        className="mt-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
-                    >
-                      Generate Final Video
-                    </button>
-                  </div>
-              )}
-              {!isLoading && images && <GeneratedImages images={images}/>}
-              {isLoading && <Spinner/>}
-            </>
-        )}
+      {/* Step 2: VoiceOver Editor */}
+      {step === 2 && (
+        <>
+          {!isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <VoiceOverEditor
+                initialText={voiceOverText}
+                currentText={editorText}
+                onTextChange={setEditorText}
+                onImageSubmit={handleImageDescriptionSubmit}
+                onVoiceOverSubmit={handleVoiceOverSubmit}
+                canGenerateImages={!!audioSrc}
+              />
+            </motion.div>
+          )}
+          {!isLoading && (
+            <div className="flex flex-row justify-center mt-2">
+              {audioSrc && <AudioPlayer src={audioSrc} />}
+            </div>
+          )}
+          {isLoading && <Spinner />}
+        </>
+      )}
 
-        {/* Step 5: Video Player */}
-        {step === 5 && (
-            <>
-              <VideoPlayer videoSrc={videoSrc}/>
-            </>
-        )}
-      </div>
+      {/* Step 3: Image Description Editor */}
+      {step === 3 && (
+        <>
+          {!isLoading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ImageDescriptionEditor
+                initialDescriptions={imageDescriptions}
+                onSubmit={handleImageSubmit}
+              />
+            </motion.div>
+          )}
+          {isLoading && <Spinner />}
+        </>
+      )}
+
+      {/* Step 4: Generated Images and Generate Final Video Button */}
+      {step === 4 && (
+        <>
+          {!isLoading && (
+            <motion.div
+              className="flex flex-row justify-center mt-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <button
+                onClick={handleGenerateVideo}
+                className="mt-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+              >
+                Generate Final Video
+              </button>
+            </motion.div>
+          )}
+          {!isLoading && images && <GeneratedImages images={images} />}
+          {isLoading && <Spinner />}
+        </>
+      )}
+
+      {/* Step 5: Video Player */}
+      {step === 5 && (
+        <>
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <VideoGallery onClose={toggleGallery} />
+          </motion.div>
+        </>
+      )}
+    </div>
   );
 }

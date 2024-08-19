@@ -7,7 +7,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const response = await fetch(
-    "http://192.168.122.237:5000/generate_voice_over_script",
+    "http://127.0.0.1:5000/generate_voice_over_script",
     {
       method: "POST",
       headers: {

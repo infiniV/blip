@@ -9,12 +9,13 @@ from moviepy.video.compositing.concatenate import concatenate_videoclips
 from whisper_timestamped import load_model
 import soundfile as sf
 import os
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # # Set the paths for ffmpeg and ImageMagick
-# change_settings({"FFMPEG_BINARY": r"C:\ProgramData\chocolatey\bin\ffmpeg.exe"})
-# change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe"})
-change_settings({"IMAGEMAGICK_BINARY": "/home/user/mambaforge/envs/gpu/bin/convert"})
+change_settings({"FFMPEG_BINARY": r"C:\ProgramData\chocolatey\bin\ffmpeg.exe"})
+change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe"})
+# change_settings({"IMAGEMAGICK_BINARY": "/home/user/mambaforge/envs/gpu/bin/convert"})
 # Define pipeline
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 
@@ -32,18 +33,23 @@ def getCaptions(audio_path):
 
 
 def create_slideshow():
+    #print working directory
+    print(os.getcwd())
     voice_over_path = '../frontend/public/voice_over.wav'
     sound = AudioSegment.from_wav(voice_over_path)
-    # sound.export("scripts/voice/voice_over.mp3", format='mp3', codec='libmp3lame')
-    # voice_over_path = 'scripts/voice/voice_over.mp3'
+    sound.export("scripts/voice/voice_over.mp3", format='mp3', codec='libmp3lame')
+    voice_over_path = 'scripts/voice/voice_over.mp3'
     images_dir = "scripts/images"
     font_loc = "scripts/fonts/MotleyForcesRegular-w1rZ3.ttf"
-
+    print("Creating slideshow...")
     width = 1080
     height = 1920
 
     audio_clip = AudioFileClip(voice_over_path)
 
+    # make image directory if it does not exist
+    if not os.path.exists(images_dir):
+        os.makedirs(images_dir)
     image_files = [os.path.join(images_dir, img) for img in os.listdir(images_dir) if
                    img.endswith(('.png', '.jpg', '.jpeg'))]
 
@@ -88,4 +94,3 @@ def create_slideshow():
     )
 
     return output_path
-

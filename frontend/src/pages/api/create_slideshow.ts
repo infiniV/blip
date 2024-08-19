@@ -10,16 +10,13 @@ export default async function handler(
     // Handle the POST request to trigger the slideshow creation
     try {
       // Make a request to the Python backend to create the slideshow
-      const response = await fetch(
-        "http://192.168.122.237:5000/create_slideshow",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(req.body),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:5000/create_slideshow", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req.body),
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to create slideshow: ${response.statusText}`);

@@ -9,7 +9,7 @@ export default async function handler(
   }
 ) {
   const { images_guide } = req.body;
-  const response = await fetch("http://192.168.122.237:5000/generate_images", {
+  const response = await fetch("http://127.0.0.1:5000/generate_images", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
