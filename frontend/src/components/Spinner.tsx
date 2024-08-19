@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { grid } from "ldrs";
 
 interface Message {
@@ -73,20 +74,27 @@ export default function Spinner() {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-      <l-grid size="70" speed="1.5" color="#95e138"></l-grid>
+      <l-grid size="70" speed="1.5" color="#95e138" />
       {timeoutMessage && (
-        <div className="text-xl font-thin mt-20 text-[#95e138] m-4">
+        <motion.div
+          className="text-xl font-thin mt-20 text-[#95e138] m-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: [0, 1, 0], y: [0, 20, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
           <h1>{timeoutMessage}</h1>
-        </div>
+        </motion.div>
       )}
-      {message ? (
-        <div className="text-xl font-thin mt-20 text-[#95e138] m-4">
+      {message && (
+        <motion.div
+          className="text-xl font-thin mt-20 text-[#95e138] m-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: [0, 1, 0], y: [0, 20, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
           <h1>{message.data}</h1>
-        </div>
-      ) : (
-        <div className="mt-4 text-center text-white">
-          <h1>No message received yet.</h1>
-        </div>
+          {message.data}
+        </motion.div>
       )}
     </div>
   );

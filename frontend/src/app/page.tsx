@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import PromptInput from "@/components/PromptInput";
 import VoiceOverEditor from "@/components/VoiceOverEditor";
 import ImageDescriptionEditor from "@/components/ImageDescriptionEditor";
@@ -168,10 +169,13 @@ export default function Home() {
 
   return (
     <div className="bg-[#000000] relative">
-      {step != 1 && !isLoading && (
-        <button
+      {step !== 1 && !isLoading && (
+        <motion.button
           onClick={handleBack}
           className="absolute top-4 left-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
           <svg
             viewBox="0 0 512 512"
@@ -183,25 +187,38 @@ export default function Home() {
               fill="#95e138"
             ></path>
           </svg>
-        </button>
+        </motion.button>
       )}
+
       {step === 1 && (
         <>
           {/* Video Gallery Button */}
           {!isLoading && (
-            <button
+            <motion.button
               onClick={toggleGallery}
               className="absolute top-4 right-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
             >
               Video Gallery
-            </button>
+            </motion.button>
           )}
+
           {/* Show Video Gallery */}
-          {showGallery && (
-            <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
-              <VideoGallery onClose={toggleGallery} />
-            </div>
-          )}
+          <AnimatePresence>
+            {showGallery && (
+              <motion.div
+                className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <VideoGallery onClose={toggleGallery} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Step 1: Prompt Input */}
           {!isLoading && <PromptInput onSubmit={handlePromptSubmit} />}
@@ -213,14 +230,20 @@ export default function Home() {
       {step === 2 && (
         <>
           {!isLoading && (
-            <VoiceOverEditor
-              initialText={voiceOverText}
-              currentText={editorText}
-              onTextChange={setEditorText}
-              onImageSubmit={handleImageDescriptionSubmit}
-              onVoiceOverSubmit={handleVoiceOverSubmit}
-              canGenerateImages={!!audioSrc}
-            />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <VoiceOverEditor
+                initialText={voiceOverText}
+                currentText={editorText}
+                onTextChange={setEditorText}
+                onImageSubmit={handleImageDescriptionSubmit}
+                onVoiceOverSubmit={handleVoiceOverSubmit}
+                canGenerateImages={!!audioSrc}
+              />
+            </motion.div>
           )}
           {!isLoading && (
             <div className="flex flex-row justify-center mt-2">
@@ -235,10 +258,16 @@ export default function Home() {
       {step === 3 && (
         <>
           {!isLoading && (
-            <ImageDescriptionEditor
-              initialDescriptions={imageDescriptions}
-              onSubmit={handleImageSubmit}
-            />
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <ImageDescriptionEditor
+                initialDescriptions={imageDescriptions}
+                onSubmit={handleImageSubmit}
+              />
+            </motion.div>
           )}
           {isLoading && <Spinner />}
         </>
@@ -248,14 +277,19 @@ export default function Home() {
       {step === 4 && (
         <>
           {!isLoading && (
-            <div className="flex flex-row justify-center mt-2">
+            <motion.div
+              className="flex flex-row justify-center mt-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
               <button
                 onClick={handleGenerateVideo}
                 className="mt-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
               >
                 Generate Final Video
               </button>
-            </div>
+            </motion.div>
           )}
           {!isLoading && images && <GeneratedImages images={images} />}
           {isLoading && <Spinner />}
@@ -265,9 +299,14 @@ export default function Home() {
       {/* Step 5: Video Player */}
       {step === 5 && (
         <>
-          <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50">
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
             <VideoGallery onClose={toggleGallery} />
-          </div>
+          </motion.div>
         </>
       )}
     </div>
