@@ -10,7 +10,7 @@ export default async function handler(
 ) {
   const { "voice-over": voiceOver } = req.body;
   const response = await fetch(
-    "http://192.168.122.237:5000/generate_image_description",
+    "http://127.0.0.1:5000/generate_image_description",
     {
       method: "POST",
       headers: {

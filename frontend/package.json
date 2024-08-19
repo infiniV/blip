@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "framer-motion": "^11.3.28",
     "ldrs": "^1.0.2",
     "next": "14.2.5",
+    "next-http-proxy-middleware": "^1.2.6",
     "react": "^18",
     "react-dom": "^18"
   },

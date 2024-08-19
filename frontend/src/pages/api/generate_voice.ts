@@ -8,16 +8,13 @@ export default async function handler(
   if (req.method === "POST") {
     const { voice_over_text } = req.body;
     try {
-      const response = await fetch(
-        "http://192.168.122.237:5000/generate_voice",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ voice_over_text }),
-        }
-      );
+      const response = await fetch("http://127.0.0.1:5000/generate_voice", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ voice_over_text }),
+      });
       const data = await response.json();
       res.status(200).json(data);
     } catch (error) {
