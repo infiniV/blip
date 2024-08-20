@@ -13,9 +13,9 @@ import os
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # # Set the paths for ffmpeg and ImageMagick
-change_settings({"FFMPEG_BINARY": r"C:\ProgramData\chocolatey\bin\ffmpeg.exe"})
-change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe"})
-# change_settings({"IMAGEMAGICK_BINARY": "/home/user/mambaforge/envs/gpu/bin/convert"})
+# change_settings({"FFMPEG_BINARY": r"C:\ProgramData\chocolatey\bin\ffmpeg.exe"})
+# change_settings({"IMAGEMAGICK_BINARY": r"C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe"})
+change_settings({"IMAGEMAGICK_BINARY": "/home/user/mambaforge/envs/gpu/bin/convert"})
 # Define pipeline
 device = "cuda:0" if torch.cuda.is_available() else "cpu"
 

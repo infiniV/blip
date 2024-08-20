@@ -25,7 +25,7 @@ export default function Home() {
   const [voiceOverText, setVoiceOverText] = useState("");
   const [imageDescriptions, setImageDescriptions] = useState("");
   const [images, setImages] = useState<Image[]>([]);
-  const [videoSrc, setVideoSrc] = useState("");
+  const [videoSrc, setVideoSrc] = useState("/final_video_with_subs.mp4");
   const [audioSrc, setAudioSrc] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [editorText, setEditorText] = useState("");
@@ -95,7 +95,7 @@ export default function Home() {
   const handleGenerateVideo = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("http://127.0.0.1:5000/create_slideshow", {
+      const response = await fetch("api/create_slideshow", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -106,11 +106,11 @@ export default function Home() {
       if (response.ok) {
         const data = await response.json(); // Parse the JSON response
         console.log("API Response:", data); // Debugging: Check the response
+        setStep(5);
 
         // Assuming response contains `video_file` property
         if (data.video_file) {
-          setVideoSrc(data.video_file); // Set the video source from the response
-          setStep(5);
+          // setVideoSrc(data.video_file); // Set the video source from the response
         } else {
           console.error("Video file not found in response");
         }
@@ -167,6 +167,7 @@ export default function Home() {
     setStep((prevStep) => Math.max(prevStep - 1, 1)); // Decrement step but not below 1
   };
 
+  // @ts-ignore
   return (
     <div className="bg-[#000000] relative">
       {step !== 1 && !isLoading && (
@@ -297,16 +298,22 @@ export default function Home() {
       )}
 
       {/* Step 5: Video Player */}
-      {step === 5 && (
+      {step === 1 && (
         <>
-          <motion.div
-            className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <VideoGallery onClose={toggleGallery} />
-          </motion.div>
+        {isLoading ? (
+  <div className="text-center text-sm text-[#95e138]">Loading...</div>
+) : (
+  <div className="flex justify-center">
+    {videoSrc ? (
+      <div className="max-w-xs">
+        <VideoPlayer videoSrc={videoSrc} />
+      </div>
+    ) : (
+      <div className="text-center text-sm text-[#95e138]">No video available.</div>
+    )}
+  </div>
+)}
+
         </>
       )}
     </div>

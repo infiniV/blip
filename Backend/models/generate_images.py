@@ -65,60 +65,144 @@
 #     del pipe
 #     torch.cuda.empty_cache()
 #     return generated_images
+######################################
+# import os
+# import base64
+# from io import BytesIO
+# from diffusers import DiffusionPipeline
+# import torch
+#
+#
+# def generate_images(prompt):
+#     # Print prompt for debugging
+#     print("Prompt:", prompt)
+#
+#     if not prompt:
+#         print("No image descriptions provided. Using default descriptions from file.")
+#         with open('scripts/image_descriptions.txt', 'r', encoding='utf-8') as f:
+#             images = [line.strip() for line in f if line.strip()]
+#     else:
+#         images = prompt.split("\n")
+#     print(images)
+#     # Create images directory if it doesn't exist
+#     if not os.path.exists("scripts/images"):
+#         os.makedirs("scripts/images")
+#
+#     # Delete files in the images directory
+#     for file in os.listdir("scripts/images"):
+#         os.remove(os.path.join("scripts/images", file))
+#
+#     generated_images = []
+#     width = 576
+#     height = 1024
+#     model_id = "stabilityai/sdxl-turbo"
+#     pipe = DiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+#     pipe.to("cuda")
+#     j = 0
+#     for i, prompt_text in enumerate(images, 1):
+#         if not prompt_text:
+#             continue
+#         if j >= 20:
+#             break
+#         j += 1
+#         print(f"Generating image {i}/{len(images)}: {prompt_text}")
+#
+#         # Define prompt for the diffusion model
+#
+#         # Truncate filename to avoid excessively long filenames
+#         filename = f"image_{i}_{prompt_text[:30].replace(' ', '')}.png".replace(":", "")
+#
+#         # Generate the image
+#         image = \
+#         pipe(prompt=prompt_text, num_inference_steps=2, guidance_scale=0.0, width=width, height=height).images[0]
+#
+#         # Save the generated image
+#         image_path = os.path.join("scripts/images", f"{j}" + ".png")
+#         image.save(image_path)
+#
+#         # Convert image to base64
+#         buffered = BytesIO()
+#         image.save(buffered, format="PNG")
+#         img_str = base64.b64encode(buffered.getvalue()).decode()
+#
+#         generated_images.append({
+#             "id": i,
+#             "description": prompt_text[:30],
+#             "data": f"data:image/png;base64,{img_str}",
+#             "path": image_path
+#         })
+#
+#         print(f"Saved image {i}/{len(images)}: {filename}")
+#
+#     # Cleanup
+#     del pipe
+#     torch.cuda.empty_cache()
+#
+#     return generated_images
+##############################
 import os
 import base64
 from io import BytesIO
-from diffusers import DiffusionPipeline
+from diffusers import FluxPipeline
 import torch
 
 
 def generate_images(prompt):
-    # Print prompt for debugging
     print("Prompt:", prompt)
 
+    # Load default descriptions if prompt is empty
     if not prompt:
         print("No image descriptions provided. Using default descriptions from file.")
         with open('scripts/image_descriptions.txt', 'r', encoding='utf-8') as f:
             images = [line.strip() for line in f if line.strip()]
     else:
         images = prompt.split("\n")
+
     print(images)
+
     # Create images directory if it doesn't exist
     if not os.path.exists("scripts/images"):
         os.makedirs("scripts/images")
 
-    # Delete files in the images directory
+    # Clear existing images in the directory
     for file in os.listdir("scripts/images"):
         os.remove(os.path.join("scripts/images", file))
 
+    # Initialize parameters
     generated_images = []
-    width = 288
-    height = 512
-    model_id = "stabilityai/sdxl-turbo"
-    pipe = DiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+    width = 576
+    height = 1024
+    model_id = "black-forest-labs/FLUX.1-schnell"
+
+    # Load model with optimizations
+    pipe = FluxPipeline.from_pretrained(model_id, torch_dtype=torch.bfloat16)
     pipe.to("cuda")
+    # Reduce the number of inference steps and guidance scale
+    # guidance_scale = 2.5
+    num_inference_steps = 1
+
     j = 0
     for i, prompt_text in enumerate(images, 1):
         if not prompt_text:
             continue
-        if j >= 20:
+        if j >= 15:
             break
         j += 1
         print(f"Generating image {i}/{len(images)}: {prompt_text}")
         positive_description = prompt_text.strip()
 
-        # Define prompt for the diffusion model
-        enhanced_prompt = f"Positive:\n{positive_description}\n"
-
-        # Truncate filename to avoid excessively long filenames
-        filename = f"image_{i}_{positive_description[:30].replace(' ', '')}.png".replace(":", "")
-
         # Generate the image
-        image = \
-        pipe(prompt=enhanced_prompt, num_inference_steps=1, guidance_scale=0.0, width=width, height=height).images[0]
+        image = pipe(
+            prompt=positive_description,
+            height=height,
+            width=width,
+            num_inference_steps=num_inference_steps,
+            max_sequence_length=256,
+            generator=torch.Generator("cpu").manual_seed(0)
+        ).images[0]
 
         # Save the generated image
-        image_path = os.path.join("scripts/images", f"{j}" + ".png")
+        image_path = os.path.join("scripts/images", f"{j}.png")
         image.save(image_path)
 
         # Convert image to base64
@@ -133,7 +217,7 @@ def generate_images(prompt):
             "path": image_path
         })
 
-        print(f"Saved image {i}/{len(images)}: {filename}")
+        print(f"Saved image {i}/{len(images)}: {image_path}")
 
     # Cleanup
     del pipe

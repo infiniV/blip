@@ -3,6 +3,8 @@ import os
 import torch
 from transformers import pipeline, BitsAndBytesConfig
 
+from Backend.models.create_slideshow import device
+
 
 def generate_story(prompt):
     print("CUDA available:", torch.cuda.is_available())
@@ -98,8 +100,8 @@ def generate_voice_over_text(prompt):
         "text-generation",
         model=model_name,
         tokenizer=model_name,
-        model_kwargs={"torch_dtype": torch.float16,
-                      "quantization_config": bnb_config}
+        model_kwargs={"torch_dtype": torch.float16},
+        device="cuda"
     )
 
     def generate_text(pipe, prompt, max_new_tokens):
@@ -153,25 +155,35 @@ def generate_images_prompts(voice_over):
         "text-generation",
         model=model_name,
         tokenizer=model_name,
-        model_kwargs={"torch_dtype": torch.float16,
-                      "quantization_config": bnb_config}
+        model_kwargs={"torch_dtype": torch.float16},
+        device="cuda"
     )
 
     def generate_text(pipe, prompt, max_new_tokens):
         sequences = pipe(prompt, max_new_tokens=max_new_tokens)
         return sequences[0]['generated_text'][-1]['content']
 
-    img_prompt = f"""Based on the following voice-over transcript, generate 10-20 distinct and vivid image prompts for an AI image generator. 
-    Each prompt should be 4-8 words long and correspond to a specific part of the story. Ensure the prompts are detailed and visually evocative. Each prompt should be on a new line with no extra notes, tags, or instructions.
-    Voice-over transcript:
-    {voice_over}
+    # Split the voice-over transcript into lines
+    voice_over_lines = voice_over.splitlines()
 
-    Start generating the image descriptions:"""
+    # Generate the image prompt string
+    img_prompt = f"""Based on the following voice-over transcript, generate 10-20 distinct and vivid image prompts that follow this structure: "To get good results, use a simple prompt like: 'Portrait of [object] as [role], [movie scene or director], cinematic.'"
+    Each prompt should follow this format and be concise and visually evocative. Each prompt should be on a new line with no extra notes, tags, or instructions.
+    Voice-over transcript:"""
+
+    # Append each line of the transcript to the img_prompt
+    for line in voice_over_lines:
+        img_prompt += f"\n{line}"
+
+    img_prompt += "\n\nStart generating the image descriptions:"
+
+    # Prepare the messages for the AI
     messages = [
         {"role": "system",
          "content": "You are an image description maker who creates image prompts based on provided narratives."},
         {"role": "user", "content": img_prompt},
     ]
+
     print("Generating image descriptions...")
     image_descriptions = generate_text(pipe, messages, max_new_tokens=1500)
     print(image_descriptions)

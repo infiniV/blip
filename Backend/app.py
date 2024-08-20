@@ -98,8 +98,7 @@ def beats():
 @app.route('/create_slideshow', methods=['POST'])
 def slideshow():
     send_webhook_notification("video_creation", {'video_file': "Creating slideshow..."})
-    # video_file = create_slideshow()
-    video_file ="../frontend/public/final_video_with_subs.mp4"
+    video_file = create_slideshow()
     return jsonify({'video_file': video_file})
 
 @app.route('/sse')
