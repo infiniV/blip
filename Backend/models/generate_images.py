@@ -170,16 +170,16 @@ def generate_images(prompt):
 
     # Initialize parameters
     generated_images = []
-    width = 576
+    width = 1024
     height = 1024
-    model_id = "black-forest-labs/FLUX.1-schnell"
+    model_id = "black-forest-labs/FLUX.1-dev"
 
     # Load model with optimizations
     pipe = FluxPipeline.from_pretrained(model_id, torch_dtype=torch.bfloat16)
     pipe.to("cuda")
     # Reduce the number of inference steps and guidance scale
     # guidance_scale = 2.5
-    num_inference_steps = 1
+    num_inference_steps = 40
 
     j = 0
     for i, prompt_text in enumerate(images, 1):

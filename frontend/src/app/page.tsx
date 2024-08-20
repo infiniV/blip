@@ -9,7 +9,7 @@ import VideoPlayer from "@/components/VideoPlayer";
 import AudioPlayer from "@/components/VoicePlayer";
 import dynamic from "next/dynamic";
 import VideoGallery from "@/components/VideoGallery"; // Import the new VideoGallery component
-
+import ImageGenerator from "@/components/imagegenerator";
 const Spinner = dynamic(() => import("@/components/Spinner"), {
   ssr: false,
 });
@@ -30,7 +30,16 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [editorText, setEditorText] = useState("");
   const [showGallery, setShowGallery] = useState(false); // State for showing the video gallery
+  const [showImageGenerator, setShowImageGenerator] = useState(false);
+  
+  const toggleImageGenerator = () => {
+    setShowImageGenerator(!showImageGenerator);
+  };
 
+  const handleImageGeneratorSubmit = (images: any[]) => {
+    setImages(images);
+    setShowImageGenerator(false);
+  };
   const handlePromptSubmit = async (prompt: string) => {
     setIsLoading(true);
     try {
@@ -193,38 +202,54 @@ export default function Home() {
 
       {step === 1 && (
         <>
-          {/* Video Gallery Button */}
-          {!isLoading && (
-            <motion.button
-              onClick={toggleGallery}
-              className="absolute top-4 right-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+        {/* Image Generator Button */}
+        {!isLoading && (
+          <motion.button
+            onClick={toggleImageGenerator}
+            className="absolute top-4 left-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            Image Generator
+          </motion.button>
+        )}
+
+        {/* Video Gallery Button */}
+        {!isLoading && (
+          <motion.button
+            onClick={toggleGallery}
+            className="absolute top-4 right-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            Video Gallery
+          </motion.button>
+        )}
+
+        {/* Show Video Gallery and Image Generator */}
+        <AnimatePresence>
+          {(showGallery || showImageGenerator) && (
+            <motion.div
+              className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              Video Gallery
-            </motion.button>
+              <div className="flex space-x-4">
+                {showGallery && <VideoGallery onClose={toggleGallery} />}
+                {showImageGenerator && <ImageGenerator onSubmit={handleImageGeneratorSubmit} />}
+              </div>
+            </motion.div>
           )}
+        </AnimatePresence>
 
-          {/* Show Video Gallery */}
-          <AnimatePresence>
-            {showGallery && (
-              <motion.div
-                className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <VideoGallery onClose={toggleGallery} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Step 1: Prompt Input */}
-          {!isLoading && <PromptInput onSubmit={handlePromptSubmit} />}
-          {isLoading && <Spinner />}
-        </>
+        {/* Step 1: Prompt Input */}
+        {!isLoading && <PromptInput onSubmit={handlePromptSubmit} />}
+        {isLoading && <Spinner />}
+      </>
       )}
 
       {/* Step 2: VoiceOver Editor */}

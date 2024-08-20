@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"app/page.tsx -> @/components/Spinner\":{\"id\":\"app/page.tsx -> @/components/Spinner\",\"files\":[\"static/chunks/_app-pages-browser_src_components_Spinner_tsx.js\"]}}"
+self.__REACT_LOADABLE_MANIFEST="{\"app/page.tsx -> @/components/Spinner\":{\"id\":\"app/page.tsx -> @/components/Spinner\",\"files\":[]}}"
