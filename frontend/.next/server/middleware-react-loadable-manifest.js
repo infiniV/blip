@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"app/page.tsx -> @/components/Spinner\":{\"id\":\"app/page.tsx -> @/components/Spinner\",\"files\":[]}}"
+self.__REACT_LOADABLE_MANIFEST='{"app\\\\page.tsx -> @/components/Spinner":{"id":4933,"files":[]}}';

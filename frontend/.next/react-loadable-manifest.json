@@ -1,6 +1,6 @@
 {
-  "app/page.tsx -> @/components/Spinner": {
-    "id": "app/page.tsx -> @/components/Spinner",
+  "app\\page.tsx -> @/components/Spinner": {
+    "id": 4933,
     "files": []
   }
 }

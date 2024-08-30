@@ -31,7 +31,7 @@ export default function Home() {
   const [editorText, setEditorText] = useState("");
   const [showGallery, setShowGallery] = useState(false); // State for showing the video gallery
   const [showImageGenerator, setShowImageGenerator] = useState(false);
-  
+
   const toggleImageGenerator = () => {
     setShowImageGenerator(!showImageGenerator);
   };
@@ -202,54 +202,56 @@ export default function Home() {
 
       {step === 1 && (
         <>
-        {/* Image Generator Button */}
-        {!isLoading && (
-          <motion.button
-            onClick={toggleImageGenerator}
-            className="absolute top-4 left-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            Image Generator
-          </motion.button>
-        )}
-
-        {/* Video Gallery Button */}
-        {!isLoading && (
-          <motion.button
-            onClick={toggleGallery}
-            className="absolute top-4 right-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            Video Gallery
-          </motion.button>
-        )}
-
-        {/* Show Video Gallery and Image Generator */}
-        <AnimatePresence>
-          {(showGallery || showImageGenerator) && (
-            <motion.div
-              className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+          {/* Image Generator Button */}
+          {!isLoading && (
+            <motion.button
+              onClick={toggleImageGenerator}
+              className="absolute top-4 left-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.3 }}
             >
-              <div className="flex space-x-4">
-                {showGallery && <VideoGallery onClose={toggleGallery} />}
-                {showImageGenerator && <ImageGenerator onSubmit={handleImageGeneratorSubmit} />}
-              </div>
-            </motion.div>
+              Image Generator
+            </motion.button>
           )}
-        </AnimatePresence>
 
-        {/* Step 1: Prompt Input */}
-        {!isLoading && <PromptInput onSubmit={handlePromptSubmit} />}
-        {isLoading && <Spinner />}
-      </>
+          {/* Video Gallery Button */}
+          {!isLoading && (
+            <motion.button
+              onClick={toggleGallery}
+              className="absolute top-4 right-4 bg-transparent outline outline-1 outline-[#95e138] text-[#95e138] py-2 px-4 rounded hover:bg-[#95e138] hover:text-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-[#95e138]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              Video Gallery
+            </motion.button>
+          )}
+
+          {/* Show Video Gallery and Image Generator */}
+          <AnimatePresence>
+            {(showGallery || showImageGenerator) && (
+              <motion.div
+                className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className="flex space-x-4">
+                  {showGallery && <VideoGallery onClose={toggleGallery} />}
+                  {showImageGenerator && (
+                    <ImageGenerator onSubmit={handleImageGeneratorSubmit} />
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Step 1: Prompt Input */}
+          {!isLoading && <PromptInput onSubmit={handlePromptSubmit} />}
+          {isLoading && <Spinner />}
+        </>
       )}
 
       {/* Step 2: VoiceOver Editor */}
@@ -325,20 +327,21 @@ export default function Home() {
       {/* Step 5: Video Player */}
       {step === 1 && (
         <>
-        {isLoading ? (
-  <div className="text-center text-sm text-[#95e138]">Loading...</div>
-) : (
-  <div className="flex justify-center">
-    {videoSrc ? (
-      <div className="max-w-xs">
-        <VideoPlayer videoSrc={videoSrc} />
-      </div>
-    ) : (
-      <div className="text-center text-sm text-[#95e138]">No video available.</div>
-    )}
-  </div>
-)}
-
+          {isLoading ? (
+            <div className="text-center text-sm text-[#95e138]">Loading...</div>
+          ) : (
+            <div className="flex justify-center">
+              {videoSrc ? (
+                <div className="max-w-xs">
+                  <VideoPlayer videoSrc={videoSrc} />
+                </div>
+              ) : (
+                <div className="text-center text-sm text-[#95e138]">
+                  No video available.
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
